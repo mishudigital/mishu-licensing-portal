@@ -97,13 +97,8 @@
       exEl.appendChild(c);
     });
 
-    // Show who is logged in (from Static Web Apps auth)
-    fetch("/.auth/me").then(r => r.json()).then(d => {
-      const p = d && d.clientPrincipal;
-      const who = document.getElementById("who");
-      if (p) who.innerHTML = (p.userDetails || "Signed in") + ' <a href="/logout">Sign out</a>';
-      else who.innerHTML = '<a href="/login">Sign in</a>';
-    }).catch(() => {});
+    // Proof-of-concept mode: no sign-in (access control not yet enabled)
+    document.getElementById("who").textContent = "Internal preview";
 
     // Minimal, safe markdown-ish rendering (headings, bold, lists, tables, paragraphs)
     function render(md) {
