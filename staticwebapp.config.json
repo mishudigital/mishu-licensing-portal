@@ -17,7 +17,7 @@
     "identityProviders": {
       "azureActiveDirectory": {
         "registration": {
-          "openIdIssuer": "https://login.microsoftonline.com/REPLACE_WITH_MISHU_TENANT_ID/v2.0",
+          "openIdIssuer": "https://login.microsoftonline.com/7d865560-57a2-4475-a2e4-4a219af7925f/v2.0",
           "clientIdSettingName": "AAD_CLIENT_ID",
           "clientSecretSettingName": "AAD_CLIENT_SECRET"
         }
