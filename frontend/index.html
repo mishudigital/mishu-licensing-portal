@@ -8,87 +8,92 @@
     :root {
       --bg: #0f1419; --panel: #1a2230; --panel-2: #222c3c; --line: #2d3a4d;
       --text: #e8edf3; --muted: #9fb0c3; --accent: #3d7eff; --accent-soft: #1e2d4a;
-      --warn: #e0a23a;
+      --user: #243349; --warn: #e0a23a;
     }
     * { box-sizing: border-box; }
     body { margin: 0; font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       background: var(--bg); color: var(--text); line-height: 1.55; }
     header { display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 22px; border-bottom: 1px solid var(--line); background: var(--panel); }
+      padding: 14px 22px; border-bottom: 1px solid var(--line); background: var(--panel);
+      position: sticky; top: 0; z-index: 5; }
     .brand { font-weight: 700; letter-spacing: .3px; }
     .brand span { color: var(--accent); }
-    .who { font-size: 13px; color: var(--muted); }
-    .who a { color: var(--accent); text-decoration: none; margin-left: 12px; }
-    main { max-width: 860px; margin: 0 auto; padding: 28px 20px 80px; }
-    h1 { font-size: 20px; margin: 6px 0 4px; }
-    .sub { color: var(--muted); font-size: 14px; margin-bottom: 22px; }
-    .ask { display: flex; gap: 10px; }
-    textarea { flex: 1; background: var(--panel); color: var(--text); border: 1px solid var(--line);
-      border-radius: 10px; padding: 13px 14px; font: inherit; resize: vertical; min-height: 58px; }
-    textarea:focus { outline: none; border-color: var(--accent); }
-    button { background: var(--accent); color: #fff; border: 0; border-radius: 10px;
-      padding: 0 20px; font: inherit; font-weight: 600; cursor: pointer; }
-    button:disabled { opacity: .5; cursor: default; }
-    .examples { margin: 16px 0 0; display: flex; flex-wrap: wrap; gap: 8px; }
+    .who { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 14px; }
+    .who button { background: none; border: 1px solid var(--line); color: var(--muted);
+      border-radius: 8px; padding: 5px 10px; font-size: 12px; cursor: pointer; }
+    .who button:hover { color: var(--text); border-color: var(--accent); }
+    main { max-width: 860px; margin: 0 auto; padding: 24px 20px 150px; }
+    h1 { font-size: 19px; margin: 4px 0; }
+    .sub { color: var(--muted); font-size: 14px; margin-bottom: 18px; }
+    .examples { margin: 0 0 8px; display: flex; flex-wrap: wrap; gap: 8px; }
     .chip { background: var(--accent-soft); color: #cfe0ff; border: 1px solid var(--line);
       border-radius: 999px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
-    .answer { margin-top: 26px; background: var(--panel); border: 1px solid var(--line);
-      border-radius: 12px; padding: 4px 22px 18px; display: none; }
-    .answer.show { display: block; }
-    .answer h2, .answer h3 { font-size: 15px; margin: 18px 0 6px; }
-    .answer p, .answer li { font-size: 15px; }
-    .answer table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 14px; }
-    .answer th, .answer td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; }
-    .cites { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--line);
+    .turn { margin: 18px 0; }
+    .q { background: var(--user); border: 1px solid var(--line); border-radius: 12px;
+      padding: 10px 14px; font-size: 15px; }
+    .q::before { content: "You"; display: block; font-size: 11px; color: var(--muted); margin-bottom: 3px; }
+    .a { margin-top: 12px; background: var(--panel); border: 1px solid var(--line);
+      border-radius: 12px; padding: 4px 18px 14px; }
+    .a::before { content: "Assistant"; display: block; font-size: 11px; color: var(--accent); margin: 12px 0 -4px; }
+    .a h2, .a h3 { font-size: 15px; margin: 16px 0 6px; }
+    .a p, .a li { font-size: 15px; }
+    .a table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 14px; }
+    .a th, .a td { border: 1px solid var(--line); padding: 6px 9px; text-align: left; }
+    .cites { margin-top: 16px; padding-top: 10px; border-top: 1px solid var(--line);
       font-size: 13px; color: var(--muted); }
     .cites b { color: var(--text); }
-    .loading { color: var(--muted); font-size: 14px; margin-top: 24px; display: none; }
-    .loading.show { display: block; }
-    .disclaimer { margin-top: 26px; font-size: 12px; color: var(--muted); }
+    .loading { color: var(--muted); font-size: 14px; margin: 8px 0; }
     .err { color: var(--warn); }
+    .composer { position: fixed; bottom: 0; left: 0; right: 0; background: var(--panel);
+      border-top: 1px solid var(--line); padding: 14px 20px; }
+    .composer-inner { max-width: 860px; margin: 0 auto; display: flex; gap: 10px; }
+    textarea { flex: 1; background: var(--bg); color: var(--text); border: 1px solid var(--line);
+      border-radius: 10px; padding: 12px 14px; font: inherit; resize: none; min-height: 48px; max-height: 160px; }
+    textarea:focus { outline: none; border-color: var(--accent); }
+    .composer button { background: var(--accent); color: #fff; border: 0; border-radius: 10px;
+      padding: 0 22px; font: inherit; font-weight: 600; cursor: pointer; }
+    .composer button:disabled { opacity: .5; cursor: default; }
+    .hint { max-width: 860px; margin: 6px auto 0; font-size: 11px; color: var(--muted); }
+    .disclaimer { font-size: 12px; color: var(--muted); margin-top: 6px; }
   </style>
 </head>
 <body>
   <header>
     <div class="brand">MISHU <span>Licensing Assistant</span></div>
-    <div class="who" id="who"></div>
+    <div class="who"><span>Internal preview</span><button id="reset">New conversation</button></div>
   </header>
 
   <main>
     <h1>Ask a licensing question</h1>
-    <div class="sub">Answers come from MISHU's internal licensing knowledge base, with sources. Always verify current fees and council specifics before quoting a client.</div>
+    <div class="sub">Answers come from MISHU's internal licensing knowledge base, with sources. Ask follow-up questions to dig deeper. Always verify current fees and council specifics before quoting a client.</div>
+    <div class="examples" id="examples"></div>
+    <div id="thread"></div>
+  </main>
 
-    <div class="ask">
-      <textarea id="q" placeholder="e.g. Client wants to open a café serving beer in Petaling Jaya — what licences, documents and fees?"></textarea>
+  <div class="composer">
+    <div class="composer-inner">
+      <textarea id="q" rows="1" placeholder="Ask a question… (e.g. Café serving beer in Petaling Jaya — what licences and fees?)"></textarea>
       <button id="send">Ask</button>
     </div>
-
-    <div class="examples" id="examples"></div>
-
-    <div class="loading" id="loading">Searching the knowledge base and composing an answer…</div>
-
-    <div class="answer" id="answer"></div>
-
-    <div class="disclaimer">
-      This tool assists scoping; it does not replace verifying requirements with the relevant council or regulator.
-      It will not guarantee approvals or timelines. If something isn't covered, ask the licensing team in CoWork.
-    </div>
-  </main>
+    <div class="hint">Press Enter to send · Shift+Enter for a new line · This tool assists scoping; verify with the council/regulator. It won't guarantee approvals or timelines.</div>
+  </div>
 
   <script>
     const examples = [
       "Café serving beer in Petaling Jaya — what licences, documents and fees?",
       "What does a foreign-owned trading company need (WRT)?",
       "Requirements to open a tuition centre (MOE)?",
-      "Liquor licence eligibility and the newspaper notice process?",
       "Childcare centre for under-4s — what licence and rules (TASKA)?"
     ];
 
     const qEl = document.getElementById("q");
     const sendEl = document.getElementById("send");
-    const ansEl = document.getElementById("answer");
-    const loadEl = document.getElementById("loading");
+    const threadEl = document.getElementById("thread");
     const exEl = document.getElementById("examples");
+    const resetEl = document.getElementById("reset");
+
+    // The running conversation sent to the API: [{role, content}, ...]
+    let convo = [];
 
     examples.forEach((t) => {
       const c = document.createElement("div");
@@ -97,10 +102,20 @@
       exEl.appendChild(c);
     });
 
-    // Proof-of-concept mode: no sign-in (access control not yet enabled)
-    document.getElementById("who").textContent = "Internal preview";
+    resetEl.onclick = () => {
+      convo = [];
+      threadEl.innerHTML = "";
+      exEl.style.display = "flex";
+      qEl.focus();
+    };
 
-    // Minimal, safe markdown-ish rendering (headings, bold, lists, tables, paragraphs)
+    // auto-grow textarea
+    qEl.addEventListener("input", () => {
+      qEl.style.height = "auto";
+      qEl.style.height = Math.min(qEl.scrollHeight, 160) + "px";
+    });
+
+    // Minimal, safe markdown-ish rendering
     function render(md) {
       const esc = (s) => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
       const lines = esc(md).split("\n");
@@ -110,7 +125,7 @@
       const closeTable = () => { if (inTable) { html += "</table>"; inTable = false; } };
       for (let line of lines) {
         if (/^\|(.+)\|\s*$/.test(line)) {
-          if (/^\|[\s:|-]+\|\s*$/.test(line)) continue; // separator row
+          if (/^\|[\s:|-]+\|\s*$/.test(line)) continue;
           const cells = line.split("|").slice(1, -1).map(c => c.trim());
           if (!inTable) { html += "<table>"; inTable = true; }
           html += "<tr>" + cells.map(c => "<td>" + inline(c) + "</td>").join("") + "</tr>";
@@ -125,38 +140,57 @@
       return html;
     }
 
+    function addTurn(question) {
+      const wrap = document.createElement("div");
+      wrap.className = "turn";
+      const q = document.createElement("div");
+      q.className = "q"; q.textContent = question;
+      const a = document.createElement("div");
+      a.className = "a";
+      a.innerHTML = '<div class="loading">Searching the knowledge base…</div>';
+      wrap.appendChild(q); wrap.appendChild(a);
+      threadEl.appendChild(wrap);
+      wrap.scrollIntoView({ behavior: "smooth", block: "start" });
+      return a;
+    }
+
     async function ask() {
       const question = qEl.value.trim();
       if (!question) return;
+      exEl.style.display = "none";
+      qEl.value = ""; qEl.style.height = "auto";
       sendEl.disabled = true;
-      ansEl.classList.remove("show");
-      loadEl.classList.add("show");
+
+      convo.push({ role: "user", content: question });
+      const answerEl = addTurn(question);
+
       try {
         const r = await fetch("/api/ask", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ question })
+          body: JSON.stringify({ messages: convo })
         });
         const d = await r.json();
         if (!r.ok) throw new Error(d.error || "Request failed");
         let html = render(d.answer || "");
         if (d.citations && d.citations.length) {
-          html += '<div class="cites"><b>Sources used:</b> ' +
-            d.citations.map(c => c.title).join(" · ") + "</div>";
+          html += '<div class="cites"><b>Sources used:</b> ' + d.citations.map(c => c.title).join(" · ") + "</div>";
         }
-        ansEl.innerHTML = html;
-        ansEl.classList.add("show");
+        answerEl.innerHTML = html;
+        convo.push({ role: "assistant", content: d.answer || "" });
       } catch (e) {
-        ansEl.innerHTML = '<p class="err">' + (e.message || "Something went wrong.") + "</p>";
-        ansEl.classList.add("show");
+        answerEl.innerHTML = '<p class="err">' + (e.message || "Something went wrong.") + "</p>";
+        convo.pop(); // drop the failed user turn so they can retry cleanly
       } finally {
-        loadEl.classList.remove("show");
         sendEl.disabled = false;
+        qEl.focus();
       }
     }
 
     sendEl.onclick = ask;
-    qEl.addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) ask(); });
+    qEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); ask(); }
+    });
   </script>
 </body>
 </html>
