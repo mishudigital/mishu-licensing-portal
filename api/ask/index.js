@@ -1,11 +1,4 @@
 // api/ask  — Azure Function (Node) for the Business Licensing Consultant Portal.
-// 1) takes a consultant's question
-// 2) retrieves the most relevant wiki articles from the bundled snapshot
-// 3) asks Claude to answer STRICTLY from those articles, with citations
-//
-// The Claude API key is read from the ANTHROPIC_API_KEY application setting and
-// is never sent to the browser.
-
 const data = require("../content/articles.json");
 const ARTICLES = data.articles || [];
 
@@ -16,8 +9,6 @@ const MAX_BODY_CHARS = parseInt(process.env.MAX_BODY_CHARS || "6000", 10);
 
 const STOPWORDS = new Set("the a an of to in for and or is are do i we what which how need needs require required client business premises licence license my our with on at it".split(" "));
 
-// Domain synonyms — maps everyday words to the vocabulary the wiki actually uses,
-// so "beer/café" finds the liquor and F&B articles. Extend as new gaps appear.
 const SYNONYMS = {
   beer: ["liquor", "alcohol"], wine: ["liquor", "alcohol"], alcohol: ["liquor"],
   liquor: ["liquor"], spirits: ["liquor"], booze: ["liquor", "alcohol"],
@@ -44,9 +35,7 @@ function terms(q) {
   const base = (q.toLowerCase().match(/[a-z0-9&]+/g) || [])
     .filter((t) => t.length > 2 && !STOPWORDS.has(t));
   const out = new Set(base);
-  for (const t of base) {
-    if (SYNONYMS[t]) for (const s of SYNONYMS[t]) out.add(s);
-  }
+  for (const t of base) { if (SYNONYMS[t]) for (const s of SYNONYMS[t]) out.add(s); }
   return [...out];
 }
 
@@ -61,7 +50,7 @@ function count(haystack, term) {
 function retrieve(question) {
   const ts = terms(question);
   if (ts.length === 0) return [];
-  const scored = ARTICLES.map((a) => {
+  return ARTICLES.map((a) => {
     let score = 0;
     for (const t of ts) {
       score += count(a.title, t) * 6;
@@ -69,10 +58,7 @@ function retrieve(question) {
       score += count(a.body, t) * 1;
     }
     return { a, score };
-  }).filter((x) => x.score > 0)
-    .sort((x, y) => y.score - x.score)
-    .slice(0, MAX_ARTICLES);
-  return scored.map((x) => x.a);
+  }).filter((x) => x.score > 0).sort((x, y) => y.score - x.score).slice(0, MAX_ARTICLES).map((x) => x.a);
 }
 
 function buildContext(articles) {
@@ -96,67 +82,37 @@ Rules:
 module.exports = async function (context, req) {
   const question = (req.body && req.body.question || "").toString().trim();
   if (!question) {
-    context.res = { status: 400, jsonBody: { error: "Please provide a question." } };
+    context.res = { status: 400, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "Please provide a question." }) };
     return;
   }
-
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    context.res = { status: 500, jsonBody: { error: "Server is not configured with an API key yet." } };
+    context.res = { status: 500, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "Server is not configured with an API key yet." }) };
     return;
   }
-
   const articles = retrieve(question);
   if (articles.length === 0) {
-    context.res = {
-      status: 200,
-      jsonBody: {
-        answer: "I couldn't find anything in the knowledge base that matches that question. Try rephrasing (mention the business type, the local council, or the licence), or check with the licensing team in CoWork — this topic may not be covered yet.",
-        citations: [],
-      },
-    };
+    context.res = { status: 200, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ answer: "I couldn't find anything in the knowledge base that matches that question. Try rephrasing (mention the business type, the local council, or the licence), or check with the licensing team in CoWork — this topic may not be covered yet.", citations: [] }) };
     return;
   }
-
-  const userContent =
-    `A MISHU sales consultant asks:\n\n"${question}"\n\n` +
-    `Answer using ONLY these knowledge-base articles:\n\n${buildContext(articles)}`;
-
+  const userContent = `A MISHU sales consultant asks:\n\n"${question}"\n\nAnswer using ONLY these knowledge-base articles:\n\n${buildContext(articles)}`;
   try {
     const r = await fetch(ANTHROPIC_URL, {
       method: "POST",
-      headers: {
-        "content-type": "application/json",
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: 1200,
-        system: SYSTEM_PROMPT,
-        messages: [{ role: "user", content: userContent }],
-      }),
+      headers: { "content-type": "application/json", "x-api-key": apiKey, "anthropic-version": "2023-06-01" },
+      body: JSON.stringify({ model: MODEL, max_tokens: 1200, system: SYSTEM_PROMPT, messages: [{ role: "user", content: userContent }] }),
     });
-
     if (!r.ok) {
       const detail = await r.text();
       context.log.error("Anthropic error", r.status, detail);
-      context.res = { status: 502, jsonBody: { error: "The AI service returned an error. Please try again shortly." } };
+      context.res = { status: 502, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "The AI service returned an error. Please try again shortly." }) };
       return;
     }
-
     const payload = await r.json();
     const answer = (payload.content || []).map((b) => b.text || "").join("").trim();
-
-    context.res = {
-      status: 200,
-      jsonBody: {
-        answer,
-        citations: articles.map((a) => ({ slug: a.slug, title: a.title })),
-      },
-    };
+    context.res = { status: 200, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ answer, citations: articles.map((a) => ({ slug: a.slug, title: a.title })) }) };
   } catch (err) {
     context.log.error("ask function failed", err);
-    context.res = { status: 500, jsonBody: { error: "Something went wrong answering that. Please try again." } };
+    context.res = { status: 500, headers: { "Content-Type": "application/json" }, body: JSON.stringify({ error: "Something went wrong answering that. Please try again." }) };
   }
 };
