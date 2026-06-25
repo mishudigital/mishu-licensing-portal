@@ -1,0 +1,8 @@
+{
+  "name": "licensing-portal-api",
+  "version": "1.0.0",
+  "description": "Serverless API for the MISHU Business Licensing Consultant Portal",
+  "main": "ask/index.js",
+  "engines": { "node": ">=18" },
+  "dependencies": {}
+}
